@@ -1,3 +1,5 @@
+/* style.css */
+
 :root {
     --primary-color: #4a90e2; /* A nice blue */
     --secondary-color: #50e3c2; /* A teal/mint accent */
@@ -209,6 +211,7 @@ main {
     display: flex; /* For centering text vertically if needed */
     align-items: center;
     justify-content: center;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease; /* Smooth transition for messages */
 }
 .message-area.success {
     background-color: #d1e7dd; /* Softer green */
@@ -230,6 +233,7 @@ main {
 /* Flashcard Styles (from original) */
 .flashcard-container {
     perspective: 1000px;
+    margin-top: 1.5rem; /* Added margin-top to separate from load section or message area */
     margin-bottom: 1.5rem;
     width: 100%;
     max-width: 480px; /* Adjusted max-width for the card */
@@ -377,7 +381,7 @@ main {
 }
 
 .filter-controls {
-    margin-top: 1rem; /* Changed from margin-bottom to margin-top */
+    /* margin-top: 1rem; Removed to let it flow after card-counter */
     margin-bottom: 1.5rem; /* Added margin-bottom */
     display: flex;
     align-items: center;
@@ -444,7 +448,7 @@ footer {
     }
     .flashcard-container {
         height: 300px;
-        max-width: 450px;
+        max-width: 95%; /* Ensure it fits within main's padding */
     }
     .controls button {
         padding: 0.7rem 1.2rem;
@@ -470,9 +474,10 @@ footer {
     }
     main {
         padding: 1rem;
+        max-width: 100%; /* Allow full width on small screens after body padding */
     }
     .flashcard-container {
-        height: 280px; /* Even smaller for very small screens */
+        height: 280px; 
         max-width: 100%;
     }
     .flashcard-front, .flashcard-back {
@@ -480,19 +485,22 @@ footer {
     }
     .controls {
         gap: 0.5rem;
-        flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+        flex-wrap: wrap; 
         justify-content: space-around;
     }
     .controls button {
         padding: 0.6rem 1rem;
         font-size: 0.85rem;
-        flex-grow: 1; /* Allow buttons to grow if space allows */
-        min-width: 100px; /* Minimum width for buttons */
+        flex-basis: 100px; /* Minimum base width for buttons before growing */
+        flex-grow: 1; 
     }
     .star-button {
         font-size: 1.6rem;
         top: 10px;
         right: 10px;
+    }
+    .load-data-section {
+        padding: 1rem;
     }
     .load-data-section h2 {
         font-size: 1.2rem;
@@ -505,9 +513,9 @@ footer {
     }
     .json-format-note {
         font-size: 0.75rem;
+        padding: 0.6rem;
     }
 
-    /* Ensure OR divider lines don't look weird on mobile */
     .or-divider::before, .or-divider::after {
         width: 35%;
     }
