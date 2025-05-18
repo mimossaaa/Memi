@@ -12,24 +12,50 @@
     <header>
         <h1>Flashcard Master</h1>
         <div class="personal-links">
-            <a href="https://www.linkedin.com/in/majid-rebouh-846b462b3/" target="_blank" aria-label="My LinkedIn Profile">
+            <a href="https://www.linkedin.com/in/your-linkedin-username" target="_blank" aria-label="My LinkedIn Profile">
                 <i class="fab fa-linkedin"></i>
             </a>
-            <a href="https://github.com/mimossaaa/" target="_blank" aria-label="My GitHub Profile">
+            <a href="https://github.com/your-github-username" target="_blank" aria-label="My GitHub Profile">
                 <i class="fab fa-github"></i>
             </a>
         </div>
     </header>
 
     <main>
+        <section class="load-data-section">
+            <h2>Load Your Flashcards</h2>
+            <div class="load-options">
+                <div class="file-upload-container">
+                    <label for="jsonFile" class="file-upload-label">Upload JSON File:</label>
+                    <input type="file" id="jsonFile" accept=".json">
+                </div>
+                <p class="or-divider">OR</p>
+                <div class="paste-json-container">
+                    <label for="jsonPasteArea">Paste JSON Content:</label>
+                    <textarea id="jsonPasteArea" rows="5" placeholder="[
+  {
+    "id": "custom1",
+    "title": "My Title",
+    "definition": "My definition..."
+  }
+]"></textarea>
+                    <button id="loadPastedJson" class="load-button">Load from Text</button>
+                </div>
+            </div>
+            <p class="json-format-note">
+                Ensure JSON is an array of objects, each with "id" (unique string), "title" (string), and "definition" (string).
+                <br>Example: <code>[{"id": "q1", "title": "Term", "definition": "Meaning"}]</code>
+            </p>
+        </section>
+
         <div class="flashcard-container">
             <div class="flashcard">
                 <div class="flashcard-inner">
                     <div class="flashcard-front">
-                        <p class="card-content-text" id="cardTitle">Loading Title...</p>
+                        <p class="card-content-text" id="cardTitle">Load cards above or use default.</p>
                     </div>
                     <div class="flashcard-back">
-                        <p class="card-content-text" id="cardDefinition">Loading Definition...</p>
+                        <p class="card-content-text" id="cardDefinition">See instructions above to load your cards.</p>
                     </div>
                 </div>
                 <button class="star-button" aria-label="Star this card">
@@ -52,10 +78,11 @@
             <label for="showStarredToggle">Show Only Starred:</label>
             <input type="checkbox" id="showStarredToggle">
         </div>
+         <p id="messageArea" class="message-area"></p> <!-- For user feedback -->
     </main>
 
     <footer>
-        <p>© 2025 Majid Rebouh. Memi. </p>
+        <p>© 2024 Your Name. Flashcard App.</p>
     </footer>
 
     <script src="script.js"></script>
