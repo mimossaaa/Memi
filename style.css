@@ -1,294 +1,147 @@
-:root {
-    --primary-color: #4a90e2; /* A nice blue */
-    --secondary-color: #50e3c2; /* A teal/mint accent */
-    --background-color: #f4f7f6; /* Light grayish background */
-    --card-background: #ffffff;
-    --text-color: #333333;
-    --light-text-color: #f0f0f0;
-    --shadow-color: rgba(0, 0, 0, 0.1);
-    --star-color: #f39c12; /* Gold for starred */
-    --border-radius: 12px;
-    --transition-speed: 0.4s;
-}
+/* ... (previous styles) ... */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    line-height: 1.6;
-}
-
-header {
-    background-color: var(--primary-color);
-    color: var(--light-text-color);
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 4px var(--shadow-color);
-}
-
-header h1 {
-    font-size: 1.8rem;
-    font-weight: 600;
-}
-
-.personal-links a {
-    color: var(--light-text-color);
-    margin-left: 1rem;
-    font-size: 1.5rem;
-    transition: color var(--transition-speed) ease, transform var(--transition-speed) ease;
-}
-
-.personal-links a:hover {
-    color: var(--secondary-color);
-    transform: scale(1.1);
-}
-
-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    width: 100%;
-    max-width: 600px; /* Max width for the main content area */
-    margin: 0 auto;
-}
-
-.flashcard-container {
-    perspective: 1000px; /* For 3D flip effect */
-    margin-bottom: 1.5rem;
-    width: 100%;
-    max-width: 450px; /* Max width of the card itself */
-    height: 300px; /* Fixed height for consistency */
-}
-
-.flashcard {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    cursor: pointer;
-    transition: transform var(--transition-speed) ease; /* For the container itself if needed */
-}
-
-.flashcard-inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform var(--transition-speed) ease;
-    box-shadow: 0 5px 15px var(--shadow-color);
-    border-radius: var(--border-radius);
-}
-
-.flashcard.is-flipped .flashcard-inner {
-    transform: rotateY(180deg);
-}
-
-.flashcard-front,
-.flashcard-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden; /* Hides the back of the element when flipped */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-    text-align: center;
+/* Load Data Section Styles */
+.load-data-section {
     background-color: var(--card-background);
+    padding: 1.5rem;
     border-radius: var(--border-radius);
-    border: 1px solid #e0e0e0;
+    box-shadow: 0 3px 10px var(--shadow-color);
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 550px; /* Slightly wider than card for better layout */
 }
 
-.flashcard-front {
-    /* Front specific styles if any */
-}
-
-.flashcard-back {
-    transform: rotateY(180deg);
-    font-size: 0.95rem;
-}
-
-.card-content-text {
-    max-height: 90%; /* Ensure text doesn't overflow padding */
-    overflow-y: auto; /* Add scroll if content is too long */
-    padding-right: 5px; /* Space for scrollbar */
-}
-
-/* Custom scrollbar for card content */
-.card-content-text::-webkit-scrollbar {
-    width: 6px;
-}
-.card-content-text::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-.card-content-text::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
-}
-.card-content-text::-webkit-scrollbar-thumb:hover {
-    background: #aaa;
-}
-
-
-.star-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 1.8rem; /* Increased size */
-    color: #ccc; /* Default unstarred color */
-    cursor: pointer;
-    z-index: 10; /* Ensure it's above card content */
-    padding: 5px;
-    transition: color var(--transition-speed) ease, transform var(--transition-speed) ease;
-}
-
-.star-button:hover {
-    transform: scale(1.15);
-}
-
-.star-button.starred .fa-star {
-    color: var(--star-color);
-    font-weight: 900; /* Makes it a filled star if using FontAwesome Solid */
-}
-
-
-.controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.load-data-section h2 {
+    text-align: center;
     margin-bottom: 1rem;
-    gap: 1rem; /* Space between buttons */
+    color: var(--primary-color);
 }
 
-.controls button {
+.load-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.file-upload-container, .paste-json-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.file-upload-label, .paste-json-container label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+#jsonFile {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: calc(var(--border-radius) / 2);
+    font-size: 0.9rem;
+}
+#jsonFile::file-selector-button { /* Style the button part of file input */
     background-color: var(--primary-color);
     color: white;
     border: none;
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-    border-radius: var(--border-radius);
+    padding: 0.5rem 0.8rem;
+    border-radius: calc(var(--border-radius) / 2);
     cursor: pointer;
-    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.controls button:hover {
-    background-color: darken(var(--primary-color), 10%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--shadow-color);
-}
-
-.controls button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px var(--shadow-color);
-}
-
-.controls button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.controls button i {
-    font-size: 1.2em; /* Make icon slightly larger than text */
-}
-
-.card-counter {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 1rem;
-}
-
-.filter-controls {
-    margin-top: 1rem;
-    display: flex;
-    align-items: center;
-    font-size: 0.9rem;
-}
-
-.filter-controls label {
+    transition: background-color var(--transition-speed) ease;
     margin-right: 0.5rem;
 }
-
-#showStarredToggle {
-    margin-left: 0.5rem;
-    transform: scale(1.2);
-    accent-color: var(--primary-color);
+#jsonFile::file-selector-button:hover {
+    background-color: darken(var(--primary-color), 10%);
 }
 
 
-footer {
+.or-divider {
     text-align: center;
-    padding: 1rem;
-    background-color: #e0e0e0;
+    font-weight: bold;
+    color: #777;
+    margin: 0.5rem 0;
+}
+
+#jsonPasteArea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: calc(var(--border-radius) / 2);
+    font-family: 'Courier New', Courier, monospace; /* Good for code-like text */
+    font-size: 0.85rem;
+    min-height: 80px;
+    resize: vertical;
+}
+
+.load-button {
+    background-color: var(--secondary-color);
     color: var(--text-color);
+    font-weight: 600;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: calc(var(--border-radius) / 2);
+    cursor: pointer;
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+    align-self: flex-start; /* Align button to the left */
+}
+
+.load-button:hover {
+    background-color: darken(var(--secondary-color), 10%);
+    transform: translateY(-1px);
+}
+
+.json-format-note {
+    margin-top: 1rem;
     font-size: 0.8rem;
-    margin-top: auto; /* Pushes footer to bottom */
+    color: #555;
+    background-color: #f9f9f9;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px dashed #ddd;
+}
+.json-format-note code {
+    background-color: #eee;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Courier New', Courier, monospace;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    header h1 {
-        font-size: 1.5rem;
+.message-area {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 500;
+}
+.message-area.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.message-area.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+
+/* Responsive adjustments for load data section */
+@media (min-width: 600px) { /* For slightly larger screens, make load options side-by-side */
+    .load-options {
+        flex-direction: row;
+        align-items: flex-start; /* Align items to the top */
+        gap: 1.5rem;
     }
-    .personal-links a {
-        font-size: 1.3rem;
+    .file-upload-container, .paste-json-container {
+        flex: 1; /* Make them take equal width */
     }
-    .flashcard-container {
-        height: 280px; /* Slightly smaller card on mobile */
-    }
-    .controls button {
-        padding: 0.7rem 1.2rem;
-        font-size: 0.9rem;
+    .or-divider {
+        writing-mode: vertical-rl; /* Make OR vertical */
+        text-orientation: mixed;
+        margin: 0; /* Reset margin for flex item */
+        align-self: center; /* Center it vertically */
     }
 }
 
-@media (max-width: 480px) {
-    header {
-        padding: 0.8rem 1rem;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    header h1 {
-        font-size: 1.3rem;
-    }
-    main {
-        padding: 1rem;
-    }
-    .flashcard-container {
-        height: 250px; /* Even smaller for very small screens */
-    }
-    .flashcard-front, .flashcard-back {
-        padding: 1rem;
-    }
-    .controls {
-        gap: 0.5rem;
-    }
-    .controls button {
-        padding: 0.6rem 1rem;
-    }
-    .star-button {
-        font-size: 1.5rem;
-        top: 10px;
-        right: 10px;
-    }
-}
+/* ... (rest of your CSS) ... */
