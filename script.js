@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cardTitleEl = document.getElementById('cardTitle');
     const cardDefinitionEl = document.getElementById('cardDefinition');
     const flashcardEl = document.querySelector('.flashcard');
-    const flashcardInnerEl = document.querySelector('.flashcard-inner');
+    // const flashcardInnerEl = document.querySelector('.flashcard-inner'); // Not directly used after setup
     const prevCardBtn = document.getElementById('prevCard');
     const nextCardBtn = document.getElementById('nextCard');
     const shuffleCardsBtn = document.getElementById('shuffleCards');
@@ -12,120 +12,173 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalCardNumEl = document.getElementById('totalCardNum');
     const showStarredToggle = document.getElementById('showStarredToggle');
 
+    // New elements for data loading
+    const jsonFileUpload = document.getElementById('jsonFile');
+    const jsonPasteArea = document.getElementById('jsonPasteArea');
+    const loadPastedJsonBtn = document.getElementById('loadPastedJson');
+    const messageArea = document.getElementById('messageArea');
+
+
     let allFlashcards = [];
-    let displayedFlashcards = []; // Could be all or just starred
+    let displayedFlashcards = [];
     let currentCardIndex = 0;
     let starredCardIds = new Set(JSON.parse(localStorage.getItem('starredFlashcards')) || []);
     let isShowingStarred = false;
 
-    // --- Data Loading and Initialization ---
-    async function loadFlashcards() {
+    // --- Message Display ---
+    function showMessage(text, type = 'info') { // type can be 'success', 'error', 'info'
+        messageArea.textContent = text;
+        messageArea.className = 'message-area'; // Reset classes
+        if (type === 'success') {
+            messageArea.classList.add('success');
+        } else if (type === 'error') {
+            messageArea.classList.add('error');
+        }
+        // For 'info', no extra class needed or define one if desired
+        setTimeout(() => {
+            messageArea.textContent = '';
+            messageArea.className = 'message-area';
+        }, 5000); // Clear message after 5 seconds
+    }
+
+
+    // --- Data Processing and Display ---
+    function processAndDisplayCards(jsonDataString) {
         try {
-            const response = await fetch('flashcards.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            const parsedData = JSON.parse(jsonDataString);
+            if (!Array.isArray(parsedData)) {
+                throw new Error("JSON data must be an array of flashcard objects.");
             }
-            allFlashcards = await response.json();
-            if (allFlashcards.length === 0) {
-                showError("No flashcards found. Please add some to flashcards.json.");
-                return;
+
+            // Basic validation of card structure
+            if (parsedData.length > 0) {
+                const firstCard = parsedData[0];
+                if (typeof firstCard !== 'object' || firstCard === null ||
+                    !firstCard.hasOwnProperty('id') || typeof firstCard.id !== 'string' ||
+                    !firstCard.hasOwnProperty('title') || typeof firstCard.title !== 'string' ||
+                    !firstCard.hasOwnProperty('definition') || typeof firstCard.definition !== 'string') {
+                    throw new Error("Each flashcard object must have 'id' (string), 'title' (string), and 'definition' (string) properties.");
+                }
             }
-            updateDisplayedFlashcards(); // This will initially set displayedFlashcards to allFlashcards
-            // displayCard(); // Now called by updateDisplayedFlashcards
+            
+            allFlashcards = parsedData;
+            currentCardIndex = 0;
+            // isShowingStarred = false; // Reset filter on new data load
+            // showStarredToggle.checked = false;
+            // starredCardIds = new Set(); // Optionally reset stars or keep them if IDs match
+            // localStorage.removeItem('starredFlashcards');
+
+            updateDisplayedFlashcards(); // This will re-render with new data
+            if (allFlashcards.length > 0) {
+                showMessage(`Successfully loaded ${allFlashcards.length} flashcards!`, 'success');
+            } else {
+                showMessage("Loaded an empty set of flashcards. Add data to your JSON.", 'info');
+            }
+            jsonPasteArea.value = ''; // Clear textarea after successful load
+
         } catch (error) {
-            console.error("Failed to load flashcards:", error);
-            showError("Could not load flashcards. Check console for details.");
+            console.error("Error processing JSON data:", error);
+            showMessage(`Invalid JSON data: ${error.message}. Please check format and content.`, 'error');
+            // Optionally, clear cards or revert to a default state if parse fails
+            // For now, keep the previously loaded cards if the new data is invalid.
         }
     }
+
+    // --- Initial App Load (tries to load default flashcards.json) ---
+    async function initializeAppWithDefault() {
+        try {
+            const response = await fetch('flashcards.json');
+            if (response.ok) {
+                const defaultCardsText = await response.text();
+                // Only load default if no cards are currently loaded (e.g. from previous session or user action)
+                if (allFlashcards.length === 0) {
+                     processAndDisplayCards(defaultCardsText); // Use the same processing function
+                     showMessage("Loaded default flashcards. You can upload your own above.", "info");
+                }
+            } else {
+                 console.warn("Default flashcards.json not found or couldn't be loaded.");
+                 if (allFlashcards.length === 0) { // If no cards at all
+                    displayCard(); // This will show the "No cards to display" message
+                 }
+            }
+        } catch (error) {
+            console.error("Error loading default flashcards.json:", error);
+            if (allFlashcards.length === 0) {
+                displayCard();
+            }
+        }
+        // Regardless of default load, ensure UI is correctly set up
+        updateButtonStates();
+        updateCardCounter();
+    }
+
 
     function updateDisplayedFlashcards() {
         if (isShowingStarred) {
             displayedFlashcards = allFlashcards.filter(card => starredCardIds.has(card.id));
             if (displayedFlashcards.length === 0 && allFlashcards.length > 0) {
-                // If no starred cards, but there are cards, show a message or revert
-                alert("No starred cards to show. Displaying all cards.");
-                showStarredToggle.checked = false; // uncheck toggle
-                isShowingStarred = false;
-                displayedFlashcards = [...allFlashcards];
+                showMessage("No starred cards to show. Uncheck 'Show Only Starred' or star some cards.", "info");
+                // Optionally revert:
+                // showStarredToggle.checked = false;
+                // isShowingStarred = false;
+                // displayedFlashcards = [...allFlashcards];
             }
         } else {
             displayedFlashcards = [...allFlashcards];
         }
-        currentCardIndex = 0; // Reset index when card set changes
-        if (displayedFlashcards.length === 0 && allFlashcards.length > 0 && isShowingStarred) {
-             // This case is handled above, but as a fallback:
-            totalCardNumEl.textContent = allFlashcards.length; // Show total of all cards
-            showError("No starred cards. Uncheck 'Show Only Starred' to see all cards.");
-        } else if (displayedFlashcards.length === 0 && allFlashcards.length === 0) {
-            showError("No flashcards available.");
-        }
-        else {
-            displayCard();
-        }
+        currentCardIndex = Math.max(0, Math.min(currentCardIndex, displayedFlashcards.length - 1));
+        displayCard();
     }
 
 
     function displayCard() {
+        flashcardEl.classList.remove('is-flipped'); // Always reset flip
+
         if (displayedFlashcards.length === 0) {
             cardTitleEl.textContent = "No cards to display";
-            cardDefinitionEl.textContent = isShowingStarred ? "Try starring some cards or uncheck 'Show Only Starred'." : "Add cards to flashcards.json";
+            cardDefinitionEl.textContent = allFlashcards.length > 0 ? "No matching starred cards. Uncheck filter or star some." : "Upload or paste JSON data above to get started.";
             currentCardNumEl.textContent = 0;
-            totalCardNumEl.textContent = allFlashcards.length; // show total of all
-            updateButtonStates();
-            updateStarIcon(); // To clear star if no card
-            return;
+            totalCardNumEl.textContent = allFlashcards.length; // Total of all cards loaded
+            starButton.style.display = 'none';
+        } else {
+            // Ensure index is within bounds if dataset changed
+            if (currentCardIndex >= displayedFlashcards.length) currentCardIndex = displayedFlashcards.length - 1;
+            if (currentCardIndex < 0) currentCardIndex = 0;
+
+            const card = displayedFlashcards[currentCardIndex];
+            cardTitleEl.textContent = card.title;
+            cardDefinitionEl.textContent = card.definition;
+            starButton.style.display = 'block';
+            updateStarIcon();
         }
-
-        // Ensure index is within bounds
-        if (currentCardIndex < 0) currentCardIndex = 0;
-        if (currentCardIndex >= displayedFlashcards.length) currentCardIndex = displayedFlashcards.length - 1;
-        
-        const card = displayedFlashcards[currentCardIndex];
-        cardTitleEl.textContent = card.title;
-        cardDefinitionEl.textContent = card.definition;
-
-        // Reset flip state
-        flashcardEl.classList.remove('is-flipped');
-
         updateButtonStates();
-        updateStarIcon();
         updateCardCounter();
     }
 
-    function showError(message) {
-        cardTitleEl.textContent = "Error";
-        cardDefinitionEl.textContent = message;
-        currentCardNumEl.textContent = 0;
-        totalCardNumEl.textContent = allFlashcards.length; // Show total of all cards available
-        prevCardBtn.disabled = true;
-        nextCardBtn.disabled = true;
-        shuffleCardsBtn.disabled = allFlashcards.length === 0;
-        starButton.style.display = 'none'; // Hide star if error
-    }
+    // showError function is now replaced by showMessage(text, 'error')
+    // showInfo function is now replaced by showMessage(text, 'info')
 
-
-    // --- UI Updates ---
     function updateButtonStates() {
-        prevCardBtn.disabled = currentCardIndex === 0 || displayedFlashcards.length <= 1;
-        nextCardBtn.disabled = currentCardIndex === displayedFlashcards.length - 1 || displayedFlashcards.length <= 1;
-        shuffleCardsBtn.disabled = displayedFlashcards.length <= 1; // Can't shuffle one card
-        starButton.style.display = displayedFlashcards.length > 0 ? 'block' : 'none';
+        const M = displayedFlashcards.length;
+        prevCardBtn.disabled = currentCardIndex === 0 || M <= 1;
+        nextCardBtn.disabled = currentCardIndex === M - 1 || M <= 1;
+        shuffleCardsBtn.disabled = M <= 1;
+        starButton.style.display = M > 0 ? 'block' : 'none';
     }
 
     function updateStarIcon() {
-        if (displayedFlashcards.length > 0) {
+        if (displayedFlashcards.length > 0 && displayedFlashcards[currentCardIndex]) {
             const currentCardId = displayedFlashcards[currentCardIndex].id;
             if (starredCardIds.has(currentCardId)) {
                 starButton.classList.add('starred');
-                starIcon.classList.remove('far'); // Use regular
-                starIcon.classList.add('fas');   // Use solid
+                starIcon.classList.remove('far');
+                starIcon.classList.add('fas');
             } else {
                 starButton.classList.remove('starred');
                 starIcon.classList.remove('fas');
                 starIcon.classList.add('far');
             }
         } else {
-            // No card, ensure star is reset
             starButton.classList.remove('starred');
             starIcon.classList.remove('fas');
             starIcon.classList.add('far');
@@ -134,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function updateCardCounter() {
         currentCardNumEl.textContent = displayedFlashcards.length > 0 ? currentCardIndex + 1 : 0;
-        totalCardNumEl.textContent = displayedFlashcards.length; // This shows count of currently displayed set
+        totalCardNumEl.textContent = displayedFlashcards.length;
     }
 
     // --- Event Handlers ---
@@ -159,9 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function shuffleDisplayedCards() {
-        if (displayedFlashcards.length <= 1) return; // No need to shuffle
-        
-        // Fisher-Yates Shuffle
+        if (displayedFlashcards.length <= 1) return;
         for (let i = displayedFlashcards.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [displayedFlashcards[i], displayedFlashcards[j]] = [displayedFlashcards[j], displayedFlashcards[i]];
@@ -171,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function toggleStar() {
-        if (displayedFlashcards.length === 0) return;
+        if (displayedFlashcards.length === 0 || !displayedFlashcards[currentCardIndex]) return;
 
         const currentCardId = displayedFlashcards[currentCardIndex].id;
         if (starredCardIds.has(currentCardId)) {
@@ -182,9 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('starredFlashcards', JSON.stringify(Array.from(starredCardIds)));
         updateStarIcon();
 
-        // If showing only starred and the current card is unstarred, refresh the view
         if (isShowingStarred && !starredCardIds.has(currentCardId)) {
-            updateDisplayedFlashcards();
+            updateDisplayedFlashcards(); // Refresh view if an unstarred card should disappear
         }
     }
     
@@ -194,15 +244,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleKeyboardNavigation(e) {
+        if (e.target === jsonPasteArea) return; // Don't interfere with typing in textarea
+
         if (e.key === "ArrowRight") {
             showNextCard();
         } else if (e.key === "ArrowLeft") {
             showPrevCard();
-        } else if (e.key === " ") { // Space to flip
-            e.preventDefault(); // Prevent page scroll
+        } else if (e.key === " " && document.activeElement !== jsonPasteArea) { 
+            e.preventDefault(); 
             flipCard();
-        } else if (e.key.toLowerCase() === "s") { // 's' to star
+        } else if (e.key.toLowerCase() === "s" && document.activeElement !== jsonPasteArea) { 
             toggleStar();
+        }
+    }
+
+    // --- New Event Handlers for Data Loading ---
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                processAndDisplayCards(e.target.result);
+            };
+            reader.onerror = () => {
+                showMessage("Error reading file.", 'error');
+            }
+            reader.readAsText(file);
+        }
+    }
+
+    function handlePasteLoad() {
+        const pastedJson = jsonPasteArea.value.trim();
+        if (pastedJson) {
+            processAndDisplayCards(pastedJson);
+        } else {
+            showMessage("Textarea is empty. Paste your JSON data first.", 'error');
         }
     }
 
@@ -212,12 +288,16 @@ document.addEventListener('DOMContentLoaded', () => {
     prevCardBtn.addEventListener('click', showPrevCard);
     shuffleCardsBtn.addEventListener('click', shuffleDisplayedCards);
     starButton.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent card flip when clicking star
+        e.stopPropagation();
         toggleStar();
     });
     showStarredToggle.addEventListener('change', handleShowStarredToggle);
     document.addEventListener('keydown', handleKeyboardNavigation);
 
+    // New listeners
+    jsonFileUpload.addEventListener('change', handleFileUpload);
+    loadPastedJsonBtn.addEventListener('click', handlePasteLoad);
+
     // --- Initialize ---
-    loadFlashcards();
+    initializeAppWithDefault(); // Attempt to load default cards first
 });
