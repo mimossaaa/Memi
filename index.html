@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memi</title>
+    <title>Interactive Flashcards</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>Memi</h1>
+        <h1>Flashcard Master</h1>
         <div class="personal-links">
             <a href="https://www.linkedin.com/in/your-linkedin-username" target="_blank" aria-label="My LinkedIn Profile">
                 <i class="fab fa-linkedin"></i>
@@ -22,63 +22,71 @@
     </header>
 
     <main>
-        <section class="load-data-section">
-            <h2>Load Your Flashcards</h2>
-            <div class="load-options">
-                <div class="file-upload-container">
-                    <label for="jsonFile" class="file-upload-label">Upload JSON File:</label>
-                    <input type="file" id="jsonFile" accept=".json">
-                </div>
-                <p class="or-divider">OR</p>
-                <div class="paste-json-container">
-                    <label for="jsonPasteArea">Paste JSON Content:</label>
-                    <textarea id="jsonPasteArea" rows="5" placeholder="[
+        <!-- Page 1: Upload and Manage JSON -->
+        <div id="uploadPage" class="page-content active">
+            <section class="load-data-section">
+                <h2>Load Your Flashcards</h2>
+                <div class="load-options">
+                    <div class="file-upload-container">
+                        <label for="jsonFile" class="file-upload-label">Upload JSON File:</label>
+                        <input type="file" id="jsonFile" accept=".json">
+                    </div>
+                    <p class="or-divider">OR</p>
+                    <div class="paste-json-container">
+                        <label for="jsonPasteArea">Paste JSON Content:</label>
+                        <textarea id="jsonPasteArea" rows="5" placeholder="[
   {
     "id": "custom1",
     "title": "My Title",
     "definition": "My definition..."
   }
 ]"></textarea>
-                    <button id="loadPastedJson" class="load-button">Load from Text</button>
-                </div>
-            </div>
-            <p class="json-format-note">
-                Ensure JSON is an array of objects, each with "id" (unique string), "title" (string), and "definition" (string).
-                <br>Example: <code>[{"id": "q1", "title": "Term", "definition": "Meaning"}]</code>
-            </p>
-        </section>
-
-        <div class="flashcard-container">
-            <div class="flashcard">
-                <div class="flashcard-inner">
-                    <div class="flashcard-front">
-                        <p class="card-content-text" id="cardTitle">Load cards above or use default.</p>
-                    </div>
-                    <div class="flashcard-back">
-                        <p class="card-content-text" id="cardDefinition">See instructions above to load your cards.</p>
+                        <button id="loadPastedJson" class="load-button">Load from Text</button>
                     </div>
                 </div>
-                <button class="star-button" aria-label="Star this card">
-                    <i class="far fa-star"></i>
-                </button>
+                <p class="json-format-note">
+                    Ensure JSON is an array of objects, each with "id" (unique string), "title" (string), and "definition" (string).
+                    <br>Example: <code>[{"id": "q1", "title": "Term", "definition": "Meaning"}]</code>
+                </p>
+            </section>
+            <p id="uploadMessageArea" class="message-area"></p> <!-- Message area specific to upload page -->
+            <button id="viewFlashcardsBtn" class="page-nav-button">View Flashcards</button>
+        </div>
+
+        <!-- Page 2: Display Flashcards -->
+        <div id="flashcardsPage" class="page-content">
+            <button id="backToUploadBtn" class="page-nav-button top-nav-button">Back to JSON Upload</button>
+            <div class="flashcard-container">
+                <div class="flashcard">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <p class="card-content-text" id="cardTitle">Loading Title...</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <p class="card-content-text" id="cardDefinition">Loading Definition...</p>
+                        </div>
+                    </div>
+                    <button class="star-button" aria-label="Star this card">
+                        <i class="far fa-star"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="prevCard" aria-label="Previous Card"><i class="fas fa-arrow-left"></i></button>
+                <button id="shuffleCards" aria-label="Shuffle Cards"><i class="fas fa-random"></i></button>
+                <button id="nextCard" aria-label="Next Card"><i class="fas fa-arrow-right"></i></button>
+            </div>
+
+            <div class="card-counter">
+                Card <span id="currentCardNum">0</span> of <span id="totalCardNum">0</span>
+            </div>
+
+            <div class="filter-controls">
+                <label for="showStarredToggle">Show Only Starred:</label>
+                <input type="checkbox" id="showStarredToggle">
             </div>
         </div>
-
-        <div class="controls">
-            <button id="prevCard" aria-label="Previous Card"><i class="fas fa-arrow-left"></i></button>
-            <button id="shuffleCards" aria-label="Shuffle Cards"><i class="fas fa-random"></i></button>
-            <button id="nextCard" aria-label="Next Card"><i class="fas fa-arrow-right"></i></button>
-        </div>
-
-        <div class="card-counter">
-            Card <span id="currentCardNum">0</span> of <span id="totalCardNum">0</span>
-        </div>
-
-        <div class="filter-controls">
-            <label for="showStarredToggle">Show Only Starred:</label>
-            <input type="checkbox" id="showStarredToggle">
-        </div>
-         <p id="messageArea" class="message-area"></p> <!-- For user feedback -->
     </main>
 
     <footer>
