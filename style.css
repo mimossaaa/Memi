@@ -1,0 +1,294 @@
+:root {
+    --primary-color: #4a90e2; /* A nice blue */
+    --secondary-color: #50e3c2; /* A teal/mint accent */
+    --background-color: #f4f7f6; /* Light grayish background */
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --light-text-color: #f0f0f0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --star-color: #f39c12; /* Gold for starred */
+    --border-radius: 12px;
+    --transition-speed: 0.4s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: var(--light-text-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.personal-links a {
+    color: var(--light-text-color);
+    margin-left: 1rem;
+    font-size: 1.5rem;
+    transition: color var(--transition-speed) ease, transform var(--transition-speed) ease;
+}
+
+.personal-links a:hover {
+    color: var(--secondary-color);
+    transform: scale(1.1);
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px; /* Max width for the main content area */
+    margin: 0 auto;
+}
+
+.flashcard-container {
+    perspective: 1000px; /* For 3D flip effect */
+    margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 450px; /* Max width of the card itself */
+    height: 300px; /* Fixed height for consistency */
+}
+
+.flashcard {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    cursor: pointer;
+    transition: transform var(--transition-speed) ease; /* For the container itself if needed */
+}
+
+.flashcard-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform var(--transition-speed) ease;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    border-radius: var(--border-radius);
+}
+
+.flashcard.is-flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Hides the back of the element when flipped */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    text-align: center;
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    border: 1px solid #e0e0e0;
+}
+
+.flashcard-front {
+    /* Front specific styles if any */
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+    font-size: 0.95rem;
+}
+
+.card-content-text {
+    max-height: 90%; /* Ensure text doesn't overflow padding */
+    overflow-y: auto; /* Add scroll if content is too long */
+    padding-right: 5px; /* Space for scrollbar */
+}
+
+/* Custom scrollbar for card content */
+.card-content-text::-webkit-scrollbar {
+    width: 6px;
+}
+.card-content-text::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+.card-content-text::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+.card-content-text::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
+
+
+.star-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.8rem; /* Increased size */
+    color: #ccc; /* Default unstarred color */
+    cursor: pointer;
+    z-index: 10; /* Ensure it's above card content */
+    padding: 5px;
+    transition: color var(--transition-speed) ease, transform var(--transition-speed) ease;
+}
+
+.star-button:hover {
+    transform: scale(1.15);
+}
+
+.star-button.starred .fa-star {
+    color: var(--star-color);
+    font-weight: 900; /* Makes it a filled star if using FontAwesome Solid */
+}
+
+
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem; /* Space between buttons */
+}
+
+.controls button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.controls button:hover {
+    background-color: darken(var(--primary-color), 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.controls button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.controls button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.controls button i {
+    font-size: 1.2em; /* Make icon slightly larger than text */
+}
+
+.card-counter {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.filter-controls {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.filter-controls label {
+    margin-right: 0.5rem;
+}
+
+#showStarredToggle {
+    margin-left: 0.5rem;
+    transform: scale(1.2);
+    accent-color: var(--primary-color);
+}
+
+
+footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: #e0e0e0;
+    color: var(--text-color);
+    font-size: 0.8rem;
+    margin-top: auto; /* Pushes footer to bottom */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
+    .personal-links a {
+        font-size: 1.3rem;
+    }
+    .flashcard-container {
+        height: 280px; /* Slightly smaller card on mobile */
+    }
+    .controls button {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 0.8rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    header h1 {
+        font-size: 1.3rem;
+    }
+    main {
+        padding: 1rem;
+    }
+    .flashcard-container {
+        height: 250px; /* Even smaller for very small screens */
+    }
+    .flashcard-front, .flashcard-back {
+        padding: 1rem;
+    }
+    .controls {
+        gap: 0.5rem;
+    }
+    .controls button {
+        padding: 0.6rem 1rem;
+    }
+    .star-button {
+        font-size: 1.5rem;
+        top: 10px;
+        right: 10px;
+    }
+}
