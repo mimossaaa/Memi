@@ -49,15 +49,17 @@
                     <br>Example: <code>[{"id": "q1", "title": "Term", "definition": "Meaning"}]</code>
                 </p>
             </section>
-            <p id="uploadMessageArea" class="message-area"></p> <!-- Message area specific to upload page -->
+            <p id="uploadMessageArea" class="message-area"></p>
             <button id="viewFlashcardsBtn" class="page-nav-button">View Flashcards</button>
         </div>
 
         <!-- Page 2: Display Flashcards -->
         <div id="flashcardsPage" class="page-content">
-            <button id="backToUploadBtn" class="page-nav-button top-nav-button">Back to JSON Upload</button>
+            <button id="backToUploadBtn" class="page-nav-button top-nav-button">
+                <i class="fas fa-arrow-left"></i> Back to Upload
+            </button>
             <div class="flashcard-container">
-                <div class="flashcard">
+                <div class="flashcard"> <!-- JS targets this with #flashcardsPage .flashcard -->
                     <div class="flashcard-inner">
                         <div class="flashcard-front">
                             <p class="card-content-text" id="cardTitle">Loading Title...</p>
@@ -66,7 +68,7 @@
                             <p class="card-content-text" id="cardDefinition">Loading Definition...</p>
                         </div>
                     </div>
-                    <button class="star-button" aria-label="Star this card">
+                    <button class="star-button" aria-label="Star this card"> <!-- JS targets this with #flashcardsPage .star-button -->
                         <i class="far fa-star"></i>
                     </button>
                 </div>
