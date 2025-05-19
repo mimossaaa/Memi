@@ -1,23 +1,19 @@
 /* style.css */
-
 :root {
-    --primary-color: #4a90e2; /* A nice blue */
-    --secondary-color: #50e3c2; /* A teal/mint accent */
-    --background-color: #f4f7f6; /* Light grayish background */
+    --primary-color: #4a90e2;
+    --secondary-color: #50e3c2;
+    --background-color: #f4f7f6;
     --card-background: #ffffff;
     --text-color: #333333;
     --light-text-color: #f0f0f0;
     --shadow-color: rgba(0, 0, 0, 0.1);
-    --star-color: #f39c12; /* Gold for starred */
+    --star-color: #f39c12;
     --border-radius: 12px;
-    --transition-speed: 0.3s; /* Slightly faster for snappier feel */
+    --transition-speed: 0.3s;
+    --page-transition-speed: 0.35s; /* Consistent transition speed */
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: 'Poppins', sans-serif;
@@ -27,6 +23,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
 header {
@@ -37,486 +34,138 @@ header {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 4px var(--shadow-color);
-    position: sticky; /* Make header sticky */
-    top: 0;
-    z-index: 1000; /* Ensure header is above other content */
+    position: sticky; top: 0; z-index: 1000;
 }
-
-header h1 {
-    font-size: 1.8rem;
-    font-weight: 600;
-}
-
-.personal-links a {
-    color: var(--light-text-color);
-    margin-left: 1rem;
-    font-size: 1.5rem;
-    transition: color var(--transition-speed) ease, transform var(--transition-speed) ease;
-}
-
-.personal-links a:hover {
-    color: var(--secondary-color);
-    transform: scale(1.1);
-}
+header h1 { font-size: 1.8rem; font-weight: 600; }
+.personal-links a { color: var(--light-text-color); margin-left: 1rem; font-size: 1.5rem; transition: color var(--transition-speed) ease, transform var(--transition-speed) ease; }
+.personal-links a:hover { color: var(--secondary-color); transform: scale(1.1); }
 
 main {
     flex: 1;
-    display: flex;
-    flex-direction: column;
+    display: flex; /* Let the active page-content determine its own display, main is just a container */
+    flex-direction: column; /* To stack pages vertically if they were both visible without display:none */
     align-items: center;
-    /* justify-content: center; Remove this to allow content to flow from top */
     padding: 2rem;
     width: 100%;
-    max-width: 650px; /* Max width for the main content area, increased slightly for new section */
+    max-width: 700px;
     margin: 0 auto;
+    position: relative; /* Needed if pages were absolutely positioned for complex transitions */
 }
 
-/* Load Data Section Styles */
-.load-data-section {
-    background-color: var(--card-background);
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    box-shadow: 0 3px 10px var(--shadow-color);
-    margin-bottom: 2rem;
-    width: 100%;
-    /* max-width: 550px; Already handled by main's max-width */
-}
-
-.load-data-section h2 {
-    text-align: center;
-    margin-bottom: 1.5rem; /* Increased margin */
-    color: var(--primary-color);
-    font-size: 1.5rem; /* Slightly larger */
-}
-
-.load-options {
-    display: flex;
+/* Page Structure and Transitions */
+.page-content {
+    display: none; /* CRITICAL: Hide all pages by default */
     flex-direction: column;
-    gap: 1.2rem; /* Slightly more gap */
+    align-items: center;
+    width: 100%;
+    opacity: 0;
+    transform: scale(0.98) translateY(10px); /* Start slightly scaled down and moved for entry */
+    transition: opacity var(--page-transition-speed) ease-out, transform var(--page-transition-speed) ease-out;
+}
+.page-content.active {
+    display: flex; /* CRITICAL: Show active page */
+    opacity: 1;
+    transform: scale(1) translateY(0);
 }
 
-.file-upload-container, .paste-json-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem; /* Increased gap */
-}
-
-.file-upload-label, .paste-json-container label {
-    font-weight: 600;
-    font-size: 0.95rem; /* Slightly larger */
-    color: var(--text-color);
-}
-
-#jsonFile {
-    padding: 0.6rem; /* Increased padding */
-    border: 1px solid #ccc;
-    border-radius: calc(var(--border-radius) / 2);
-    font-size: 0.9rem;
-    background-color: #f9f9f9; /* Light background for input */
-}
-#jsonFile::file-selector-button {
+.page-nav-button {
     background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.6rem 0.9rem; /* Adjusted padding */
-    border-radius: calc(var(--border-radius) / 2);
-    cursor: pointer;
-    transition: background-color var(--transition-speed) ease;
-    margin-right: 0.8rem; /* Increased margin */
-}
-#jsonFile::file-selector-button:hover {
-    filter: brightness(0.9);
-}
-
-.or-divider {
-    text-align: center;
-    font-weight: bold;
-    color: #777;
-    margin: 0.5rem 0;
-    position: relative; /* For line styling */
-}
-.or-divider::before, .or-divider::after { /* Lines around OR text */
-    content: "";
-    display: inline-block;
-    width: 40%;
-    height: 1px;
-    background-color: #ccc;
-    vertical-align: middle;
-    margin: 0 0.5em;
-}
-.or-divider::before {
-    margin-right: 0.5em;
-}
-.or-divider::after {
-    margin-left: 0.5em;
-}
-
-
-#jsonPasteArea {
-    width: 100%;
-    padding: 0.8rem; /* Increased padding */
-    border: 1px solid #ccc;
-    border-radius: calc(var(--border-radius) / 2);
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.9rem; /* Slightly larger */
-    min-height: 100px; /* Increased min-height */
-    resize: vertical;
-    background-color: #fdfdfd; /* Very light background */
-}
-
-.load-button {
-    background-color: var(--secondary-color);
-    color: var(--text-color); /* Ensure good contrast with teal */
-    font-weight: 600;
-    border: none;
-    padding: 0.75rem 1.3rem; /* Adjusted padding */
-    font-size: 0.95rem; /* Slightly larger */
-    border-radius: calc(var(--border-radius) / 2);
-    cursor: pointer;
-    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
-    align-self: flex-start;
-}
-
-.load-button:hover {
-    filter: brightness(0.9);
-    transform: translateY(-1px);
-}
-
-.json-format-note {
-    margin-top: 1.2rem; /* Increased margin */
-    font-size: 0.85rem; /* Slightly larger */
-    color: #444; /* Darker for better readability */
-    background-color: #edf6ff; /* Light blue background */
-    padding: 0.8rem; /* Increased padding */
-    border-radius: calc(var(--border-radius) / 2);
-    border: 1px solid #b8d6f3; /* Blueish border */
-    line-height: 1.5;
-}
-.json-format-note code {
-    background-color: #d1e7fd; /* Slightly darker blue for code */
-    padding: 2px 5px; /* Adjusted padding */
-    border-radius: 3px;
-    font-family: 'Courier New', Courier, monospace;
-    color: #0b508c; /* Dark blue text for code */
-}
-
-.message-area {
-    margin-top: 1rem;
-    padding: 0.8rem 1rem; /* Adjusted padding */
-    border-radius: calc(var(--border-radius) / 2);
-    text-align: center;
-    font-weight: 500;
-    font-size: 0.9rem; /* Slightly larger */
-    min-height: 2.5em; /* Prevent layout jump when message appears/disappears */
-    display: flex; /* For centering text vertically if needed */
-    align-items: center;
-    justify-content: center;
-    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease; /* Smooth transition for messages */
-}
-.message-area.success {
-    background-color: #d1e7dd; /* Softer green */
-    color: #0f5132;
-    border: 1px solid #badbcc;
-}
-.message-area.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-.message-area.info {
-    background-color: #cff4fc; /* Light blue for info */
-    color: #055160;
-    border: 1px solid #b6effb;
-}
-
-
-/* Flashcard Styles (from original) */
-.flashcard-container {
-    perspective: 1000px;
-    margin-top: 1.5rem; /* Added margin-top to separate from load section or message area */
-    margin-bottom: 1.5rem;
-    width: 100%;
-    max-width: 480px; /* Adjusted max-width for the card */
-    height: 320px; /* Adjusted height */
-}
-
-.flashcard {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    cursor: pointer;
-}
-
-.flashcard-inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform var(--transition-speed) ease;
-    box-shadow: 0 5px 15px var(--shadow-color);
-    border-radius: var(--border-radius);
-}
-
-.flashcard.is-flipped .flashcard-inner {
-    transform: rotateY(180deg);
-}
-
-.flashcard-front,
-.flashcard-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    display: flex;
-    flex-direction: column; /* Allow title and content to stack if needed */
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-    text-align: center;
-    background-color: var(--card-background);
-    border-radius: var(--border-radius);
-    border: 1px solid #e0e0e0;
-}
-
-.flashcard-back {
-    transform: rotateY(180deg);
-    font-size: 0.95rem;
-}
-
-.card-content-text {
-    max-height: 90%;
-    overflow-y: auto;
-    padding-right: 8px; /* More space for scrollbar */
-    width: 100%; /* Ensure it takes full width for text centering */
-}
-
-.card-content-text::-webkit-scrollbar {
-    width: 8px;
-}
-.card-content-text::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-.card-content-text::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
-}
-.card-content-text::-webkit-scrollbar-thumb:hover {
-    background: #aaa;
-}
-
-.star-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 1.8rem;
-    color: #ccc;
-    cursor: pointer;
-    z-index: 10;
-    padding: 5px;
-    transition: color var(--transition-speed) ease, transform var(--transition-speed) ease;
-}
-
-.star-button:hover {
-    transform: scale(1.15);
-}
-
-.star-button.starred .fa-star {
-    color: var(--star-color);
-    font-weight: 900; /* fas (solid) class handles this */
-}
-
-/* Controls Styles (from original) */
-.controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1rem;
-    gap: 1rem;
-}
-
-.controls button {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-    border-radius: var(--border-radius);
-    cursor: pointer;
+    color: white; border: none; padding: 0.8rem 2rem; font-size: 1rem;
+    font-weight: 600; border-radius: var(--border-radius); cursor: pointer;
     transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    margin-top: 1.5rem; display: inline-flex; align-items: center; justify-content: center;
 }
+.page-nav-button:hover:not(:disabled) { filter: brightness(0.92); transform: translateY(-2px); box-shadow: 0 2px 6px var(--shadow-color); }
+.page-nav-button:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.7; }
+.page-nav-button i { margin-right: 0.5em; }
+.page-nav-button.top-nav-button { margin-bottom: 1.5rem; margin-top: 0; align-self: flex-start; background-color: var(--secondary-color); color: var(--text-color); }
+.page-nav-button.top-nav-button:hover:not(:disabled) { filter: brightness(0.92); }
 
-.controls button:hover:not(:disabled) {
-    filter: brightness(0.9);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px var(--shadow-color);
+
+.load-data-section { background-color: var(--card-background); padding: 1.5rem; border-radius: var(--border-radius); box-shadow: 0 3px 10px var(--shadow-color); margin-bottom: 1rem; width: 100%; max-width: 600px; }
+.load-data-section h2 { text-align: center; margin-bottom: 1.5rem; color: var(--primary-color); font-size: 1.5rem; }
+.load-options { display: flex; flex-direction: column; gap: 1.2rem; }
+.file-upload-container, .paste-json-container { display: flex; flex-direction: column; gap: 0.6rem; }
+.file-upload-label, .paste-json-container label { font-weight: 600; font-size: 0.95rem; color: var(--text-color); }
+#jsonFile { padding: 0.6rem; border: 1px solid #ccc; border-radius: calc(var(--border-radius) / 2); font-size: 0.9rem; background-color: #f9f9f9; }
+#jsonFile::file-selector-button { background-color: var(--primary-color); color: white; border: none; padding: 0.6rem 0.9rem; border-radius: calc(var(--border-radius) / 2); cursor: pointer; transition: background-color var(--transition-speed) ease; margin-right: 0.8rem; }
+#jsonFile::file-selector-button:hover { filter: brightness(0.9); }
+.or-divider { text-align: center; font-weight: bold; color: #777; margin: 0.5rem 0; position: relative; }
+.or-divider::before, .or-divider::after { content: ""; display: inline-block; width: 40%; height: 1px; background-color: #ccc; vertical-align: middle; margin: 0 0.5em; }
+.or-divider::before { margin-right: 0.5em; }
+.or-divider::after { margin-left: 0.5em; }
+#jsonPasteArea { width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: calc(var(--border-radius) / 2); font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; min-height: 100px; resize: vertical; background-color: #fdfdfd; }
+.load-button { background-color: var(--secondary-color); color: var(--text-color); font-weight: 600; border: none; padding: 0.75rem 1.3rem; font-size: 0.95rem; border-radius: calc(var(--border-radius) / 2); cursor: pointer; transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease; align-self: flex-start; }
+.load-button:hover { filter: brightness(0.9); transform: translateY(-1px); }
+.json-format-note { margin-top: 1.2rem; font-size: 0.85rem; color: #444; background-color: #edf6ff; padding: 0.8rem; border-radius: calc(var(--border-radius) / 2); border: 1px solid #b8d6f3; line-height: 1.5; }
+.json-format-note code { background-color: #d1e7fd; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', Courier, monospace; color: #0b508c; }
+
+.message-area { /* Used by uploadMessageArea */
+    margin-top: 1rem; margin-bottom: 1rem; padding: 0.8rem 1rem; border-radius: calc(var(--border-radius) / 2);
+    text-align: center; font-weight: 500; font-size: 0.9rem; min-height: 2.5em;
+    display: flex; align-items: center; justify-content: center;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    width: 100%; max-width: 600px;
 }
+.message-area.success { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+.message-area.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.message-area.info { background-color: #cff4fc; color: #055160; border: 1px solid #b6effb; }
 
-.controls button:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px var(--shadow-color);
+.flashcard-container { perspective: 1000px; margin-bottom: 1.5rem; width: 100%; max-width: 480px; height: 320px; }
+.flashcard { width: 100%; height: 100%; position: relative; cursor: pointer; }
+.flashcard-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform var(--transition-speed) ease; box-shadow: 0 5px 15px var(--shadow-color); border-radius: var(--border-radius); }
+.flashcard.is-flipped .flashcard-inner { transform: rotateY(180deg); }
+.flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; background-color: var(--card-background); border-radius: var(--border-radius); border: 1px solid #e0e0e0; }
+.flashcard-back { transform: rotateY(180deg); font-size: 0.95rem; }
+.card-content-text { max-height: 90%; overflow-y: auto; padding-right: 8px; width: 100%; }
+.card-content-text::-webkit-scrollbar { width: 8px; }
+.card-content-text::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+.card-content-text::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+.card-content-text::-webkit-scrollbar-thumb:hover { background: #aaa; }
+.star-button { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.8rem; color: #ccc; cursor: pointer; z-index: 10; padding: 5px; transition: color var(--transition-speed) ease, transform var(--transition-speed) ease; }
+.star-button:hover { transform: scale(1.15); }
+.star-button.starred .fa-star { color: var(--star-color); font-weight: 900; }
+.controls { display: flex; justify-content: center; align-items: center; margin-bottom: 1rem; gap: 1rem; }
+.controls button { background-color: var(--primary-color); color: white; border: none; padding: 0.8rem 1.5rem; font-size: 1rem; border-radius: var(--border-radius); cursor: pointer; transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease; display: flex; align-items: center; justify-content: center; }
+.controls button:hover:not(:disabled) { filter: brightness(0.9); transform: translateY(-2px); box-shadow: 0 4px 8px var(--shadow-color); }
+.controls button:active:not(:disabled) { transform: translateY(0); box-shadow: 0 2px 4px var(--shadow-color); }
+.controls button:disabled { background-color: #ccc; cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
+.controls button i { font-size: 1.2em; }
+.card-counter { font-size: 0.9rem; color: #666; margin-bottom: 1rem; }
+.filter-controls { margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+.filter-controls label { margin-right: 0.5rem; }
+#showStarredToggle { margin-left: 0.5rem; transform: scale(1.2); accent-color: var(--primary-color); cursor: pointer; }
+footer { text-align: center; padding: 1.5rem; background-color: #e9ecef; color: var(--text-color); font-size: 0.85rem; margin-top: auto; border-top: 1px solid #dee2e6; }
+
+@media (min-width: 600px) {
+    .load-options { flex-direction: row; align-items: flex-start; gap: 1.5rem; }
+    .file-upload-container, .paste-json-container { flex: 1; }
+    .or-divider { writing-mode: vertical-rl; text-orientation: mixed; margin: 0; align-self: center; height: 60px; }
+    .or-divider::before, .or-divider::after { display: none; }
 }
-
-.controls button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-    opacity: 0.7;
-}
-
-.controls button i {
-    font-size: 1.2em;
-}
-
-.card-counter {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 1rem;
-}
-
-.filter-controls {
-    /* margin-top: 1rem; Removed to let it flow after card-counter */
-    margin-bottom: 1.5rem; /* Added margin-bottom */
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Center filter controls */
-    font-size: 0.9rem;
-}
-
-.filter-controls label {
-    margin-right: 0.5rem;
-}
-
-#showStarredToggle {
-    margin-left: 0.5rem;
-    transform: scale(1.2);
-    accent-color: var(--primary-color);
-    cursor: pointer;
-}
-
-footer {
-    text-align: center;
-    padding: 1.5rem; /* Increased padding */
-    background-color: #e9ecef; /* Lighter footer background */
-    color: var(--text-color);
-    font-size: 0.85rem; /* Slightly larger */
-    margin-top: auto;
-    border-top: 1px solid #dee2e6; /* Subtle top border */
-}
-
-/* Responsive adjustments */
-@media (min-width: 600px) { /* For slightly larger screens, make load options side-by-side */
-    .load-options {
-        flex-direction: row;
-        align-items: flex-start;
-        gap: 1.5rem;
-    }
-    .file-upload-container, .paste-json-container {
-        flex: 1;
-    }
-    .or-divider {
-        writing-mode: vertical-rl;
-        text-orientation: mixed;
-        margin: 0;
-        align-self: center;
-        height: 60px; /* Give it some height */
-    }
-    .or-divider::before, .or-divider::after { /* Hide lines in vertical mode or adjust */
-        display: none; /* Simpler for vertical, or adjust width/height */
-    }
-}
-
 @media (max-width: 768px) {
-    header {
-        padding: 0.8rem 1.5rem;
-    }
-    header h1 {
-        font-size: 1.6rem;
-    }
-    .personal-links a {
-        font-size: 1.4rem;
-    }
-    main {
-        padding: 1.5rem;
-        max-width: 95%;
-    }
-    .flashcard-container {
-        height: 300px;
-        max-width: 95%; /* Ensure it fits within main's padding */
-    }
-    .controls button {
-        padding: 0.7rem 1.2rem;
-        font-size: 0.9rem;
-    }
-    .load-data-section h2 {
-        font-size: 1.3rem;
-    }
+    header { padding: 0.8rem 1.5rem; }
+    header h1 { font-size: 1.6rem; }
+    .personal-links a { font-size: 1.4rem; }
+    main { padding: 1.5rem; max-width: 95%; }
+    .flashcard-container { height: 300px; max-width: 95%; }
+    .controls button { padding: 0.7rem 1.2rem; font-size: 0.9rem; }
+    .load-data-section h2 { font-size: 1.3rem; }
 }
-
 @media (max-width: 480px) {
-    header {
-        padding: 0.8rem 1rem;
-        flex-direction: column;
-        gap: 0.5rem;
-        text-align: center;
-    }
-    header h1 {
-        font-size: 1.4rem;
-    }
-    .personal-links {
-        margin-top: 0.5rem;
-    }
-    main {
-        padding: 1rem;
-        max-width: 100%; /* Allow full width on small screens after body padding */
-    }
-    .flashcard-container {
-        height: 280px; 
-        max-width: 100%;
-    }
-    .flashcard-front, .flashcard-back {
-        padding: 1rem;
-    }
-    .controls {
-        gap: 0.5rem;
-        flex-wrap: wrap; 
-        justify-content: space-around;
-    }
-    .controls button {
-        padding: 0.6rem 1rem;
-        font-size: 0.85rem;
-        flex-basis: 100px; /* Minimum base width for buttons before growing */
-        flex-grow: 1; 
-    }
-    .star-button {
-        font-size: 1.6rem;
-        top: 10px;
-        right: 10px;
-    }
-    .load-data-section {
-        padding: 1rem;
-    }
-    .load-data-section h2 {
-        font-size: 1.2rem;
-    }
-    .file-upload-label, .paste-json-container label {
-        font-size: 0.9rem;
-    }
-    #jsonFile, #jsonPasteArea, .load-button {
-        font-size: 0.85rem;
-    }
-    .json-format-note {
-        font-size: 0.75rem;
-        padding: 0.6rem;
-    }
-
-    .or-divider::before, .or-divider::after {
-        width: 35%;
-    }
+    header { padding: 0.8rem 1rem; flex-direction: column; gap: 0.5rem; text-align: center; }
+    header h1 { font-size: 1.4rem; }
+    .personal-links { margin-top: 0.5rem; }
+    main { padding: 1rem; }
+    .page-nav-button, .page-nav-button.top-nav-button { width: 100%; }
+    .flashcard-container { height: 280px; }
+    .controls { gap: 0.5rem; flex-wrap: wrap; justify-content: space-around; }
+    .controls button { padding: 0.6rem 1rem; font-size: 0.85rem; flex-basis: 100px; flex-grow: 1; }
+    .star-button { font-size: 1.6rem; top: 10px; right: 10px; }
+    .load-data-section { padding: 1rem; }
+    .load-data-section h2 { font-size: 1.2rem; }
+    .file-upload-label, .paste-json-container label { font-size: 0.9rem; }
+    #jsonFile, #jsonPasteArea, .load-button { font-size: 0.85rem; }
+    .json-format-note { font-size: 0.75rem; padding: 0.6rem; }
+    .or-divider::before, .or-divider::after { width: 35%; }
 }
